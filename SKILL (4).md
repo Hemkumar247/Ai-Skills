@@ -1,176 +1,104 @@
-#!/usr/bin/env python3
-"""
-Frame Composer - Utilities for composing visual elements into frames.
+---
+name: changelog-generator
+description: Automatically creates user-facing changelogs from git commits by analyzing commit history, categorizing changes, and transforming technical commits into clear, customer-friendly release notes. Turns hours of manual changelog writing into minutes of automated generation.
+---
 
-Provides functions for drawing shapes, text, emojis, and compositing elements
-together to create animation frames.
-"""
+# Changelog Generator
 
-from typing import Optional
+This skill transforms technical git commits into polished, user-friendly changelogs that your customers and users will actually understand and appreciate.
 
-import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+## When to Use This Skill
 
+- Preparing release notes for a new version
+- Creating weekly or monthly product update summaries
+- Documenting changes for customers
+- Writing changelog entries for app store submissions
+- Generating update notifications
+- Creating internal release documentation
+- Maintaining a public changelog/product updates page
 
-def create_blank_frame(
-    width: int, height: int, color: tuple[int, int, int] = (255, 255, 255)
-) -> Image.Image:
-    """
-    Create a blank frame with solid color background.
+## What This Skill Does
 
-    Args:
-        width: Frame width
-        height: Frame height
-        color: RGB color tuple (default: white)
+1. **Scans Git History**: Analyzes commits from a specific time period or between versions
+2. **Categorizes Changes**: Groups commits into logical categories (features, improvements, bug fixes, breaking changes, security)
+3. **Translates Technical → User-Friendly**: Converts developer commits into customer language
+4. **Formats Professionally**: Creates clean, structured changelog entries
+5. **Filters Noise**: Excludes internal commits (refactoring, tests, etc.)
+6. **Follows Best Practices**: Applies changelog guidelines and your brand voice
 
-    Returns:
-        PIL Image
-    """
-    return Image.new("RGB", (width, height), color)
+## How to Use
 
+### Basic Usage
 
-def draw_circle(
-    frame: Image.Image,
-    center: tuple[int, int],
-    radius: int,
-    fill_color: Optional[tuple[int, int, int]] = None,
-    outline_color: Optional[tuple[int, int, int]] = None,
-    outline_width: int = 1,
-) -> Image.Image:
-    """
-    Draw a circle on a frame.
+From your project repository:
 
-    Args:
-        frame: PIL Image to draw on
-        center: (x, y) center position
-        radius: Circle radius
-        fill_color: RGB fill color (None for no fill)
-        outline_color: RGB outline color (None for no outline)
-        outline_width: Outline width in pixels
+```
+Create a changelog from commits since last release
+```
 
-    Returns:
-        Modified frame
-    """
-    draw = ImageDraw.Draw(frame)
-    x, y = center
-    bbox = [x - radius, y - radius, x + radius, y + radius]
-    draw.ellipse(bbox, fill=fill_color, outline=outline_color, width=outline_width)
-    return frame
+```
+Generate changelog for all commits from the past week
+```
 
+```
+Create release notes for version 2.5.0
+```
 
-def draw_text(
-    frame: Image.Image,
-    text: str,
-    position: tuple[int, int],
-    color: tuple[int, int, int] = (0, 0, 0),
-    centered: bool = False,
-) -> Image.Image:
-    """
-    Draw text on a frame.
+### With Specific Date Range
 
-    Args:
-        frame: PIL Image to draw on
-        text: Text to draw
-        position: (x, y) position (top-left unless centered=True)
-        color: RGB text color
-        centered: If True, center text at position
+```
+Create a changelog for all commits between March 1 and March 15
+```
 
-    Returns:
-        Modified frame
-    """
-    draw = ImageDraw.Draw(frame)
+### With Custom Guidelines
 
-    # Uses Pillow's default font.
-    # If the font should be changed for the emoji, add additional logic here.
-    font = ImageFont.load_default()
+```
+Create a changelog for commits since v2.4.0, using my changelog 
+guidelines from CHANGELOG_STYLE.md
+```
 
-    if centered:
-        bbox = draw.textbbox((0, 0), text, font=font)
-        text_width = bbox[2] - bbox[0]
-        text_height = bbox[3] - bbox[1]
-        x = position[0] - text_width // 2
-        y = position[1] - text_height // 2
-        position = (x, y)
+## Example
 
-    draw.text(position, text, fill=color, font=font)
-    return frame
+**User**: "Create a changelog for commits from the past 7 days"
 
+**Output**:
+```markdown
+# Updates - Week of March 10, 2024
 
-def create_gradient_background(
-    width: int,
-    height: int,
-    top_color: tuple[int, int, int],
-    bottom_color: tuple[int, int, int],
-) -> Image.Image:
-    """
-    Create a vertical gradient background.
+## ✨ New Features
 
-    Args:
-        width: Frame width
-        height: Frame height
-        top_color: RGB color at top
-        bottom_color: RGB color at bottom
+- **Team Workspaces**: Create separate workspaces for different 
+  projects. Invite team members and keep everything organized.
 
-    Returns:
-        PIL Image with gradient
-    """
-    frame = Image.new("RGB", (width, height))
-    draw = ImageDraw.Draw(frame)
+- **Keyboard Shortcuts**: Press ? to see all available shortcuts. 
+  Navigate faster without touching your mouse.
 
-    # Calculate color step for each row
-    r1, g1, b1 = top_color
-    r2, g2, b2 = bottom_color
+## 🔧 Improvements
 
-    for y in range(height):
-        # Interpolate color
-        ratio = y / height
-        r = int(r1 * (1 - ratio) + r2 * ratio)
-        g = int(g1 * (1 - ratio) + g2 * ratio)
-        b = int(b1 * (1 - ratio) + b2 * ratio)
+- **Faster Sync**: Files now sync 2x faster across devices
+- **Better Search**: Search now includes file contents, not just titles
 
-        # Draw horizontal line
-        draw.line([(0, y), (width, y)], fill=(r, g, b))
+## 🐛 Fixes
 
-    return frame
+- Fixed issue where large images wouldn't upload
+- Resolved timezone confusion in scheduled posts
+- Corrected notification badge count
+```
 
+**Inspired by:** Manik Aggarwal's use case from Lenny's Newsletter
 
-def draw_star(
-    frame: Image.Image,
-    center: tuple[int, int],
-    size: int,
-    fill_color: tuple[int, int, int],
-    outline_color: Optional[tuple[int, int, int]] = None,
-    outline_width: int = 1,
-) -> Image.Image:
-    """
-    Draw a 5-pointed star.
+## Tips
 
-    Args:
-        frame: PIL Image to draw on
-        center: (x, y) center position
-        size: Star size (outer radius)
-        fill_color: RGB fill color
-        outline_color: RGB outline color (None for no outline)
-        outline_width: Outline width
+- Run from your git repository root
+- Specify date ranges for focused changelogs
+- Use your CHANGELOG_STYLE.md for consistent formatting
+- Review and adjust the generated changelog before publishing
+- Save output directly to CHANGELOG.md
 
-    Returns:
-        Modified frame
-    """
-    import math
+## Related Use Cases
 
-    draw = ImageDraw.Draw(frame)
-    x, y = center
+- Creating GitHub release notes
+- Writing app store update descriptions
+- Generating email updates for users
+- Creating social media announcement posts
 
-    # Calculate star points
-    points = []
-    for i in range(10):
-        angle = (i * 36 - 90) * math.pi / 180  # 36 degrees per point, start at top
-        radius = size if i % 2 == 0 else size * 0.4  # Alternate between outer and inner
-        px = x + radius * math.cos(angle)
-        py = y + radius * math.sin(angle)
-        points.append((px, py))
-
-    # Draw star
-    draw.polygon(points, fill=fill_color, outline=outline_color, width=outline_width)
-
-    return frame
